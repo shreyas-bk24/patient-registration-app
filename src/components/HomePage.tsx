@@ -4,6 +4,7 @@ import TabList from '@mui/joy/TabList';
 import Tab from '@mui/joy/Tab';
 import TabPanel from '@mui/joy/TabPanel';
 import { Box, Typography } from '@mui/joy';
+import PatientForm from './PatientForm';
 
 
 const HomePage = () => {
@@ -17,7 +18,7 @@ const HomePage = () => {
                     <Tab>Patient List</Tab>
                 </TabList>
                 <TabPanel value={0}>
-                    <p>Patient Registration form</p>
+                    <PatientForm />
                 </TabPanel>
                 <TabPanel value={1}>
                     <p>Patient list and SQL Query tab</p>
