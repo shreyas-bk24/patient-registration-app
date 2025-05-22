@@ -1,14 +1,16 @@
-import { PGlite } from '@electric-sql/pglite'
+import { PGlite } from '@electric-sql/pglite';
 
-const db = new PGlite("idb://patient_db")
+const dbPromise = (async () => {
+  const db = new PGlite("idb://patient_db");
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS patients (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      age INTEGER NOT NULL,
+      gender TEXT NOT NULL
+    );
+  `);
+  return db;
+})();
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS patients (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    age INTEGER NOT NULL,
-    gender TEXT NOT NULL
-  );`
-)
-
-export default db;
+export default dbPromise;
