@@ -1,59 +1,46 @@
-import { useEffect, useState } from "react";
-import { Table } from "@mui/joy";
-import db from '../db/pglite';
+import React, { useEffect, useState } from "react";
+import { Typography, Table } from "@mui/joy";
+import dbPromise from "../db/pglite";
 
-interface Patient {
-  id: number;
-  name: string;
-  age: number;
-  gender: string;
-  address: string;
-}
 
 const PatientList = () => {
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patients, setPatients] = useState<any[]>([]);
 
   const fetchPatients = async () => {
-    const result = await db.exec("SELECT * FROM patients ORDER BY id DESC");
-    const rows = result[0]?.rows || [];
-    setPatients(rows as Patient[]);
+    const db = await dbPromise;
+    const result = await db.exec(`SELECT * FROM patients`);
+    setPatients(result[0]?.rows || []);
   };
 
   useEffect(() => {
     fetchPatients();
+    // Listen for storage events for cross-tab sync
+    window.addEventListener("storage", fetchPatients);
+    return () => window.removeEventListener("storage", fetchPatients);
   }, []);
 
   return (
-    <Table
-      aria-label="List of registered patients"
-      variant="soft"
-      borderAxis="xBetween"
-      stripe="odd"
-      hoverRow
-      stickyHeader
-    >
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Age</th>
-          <th>Gender</th>
-          <th>Address</th>
-        </tr>
-      </thead>
-      <tbody>
-        {patients.map((p) => (
-          <tr key={p.id}>
-            <td>{p.id}</td>
-            <td>{p.name}</td>
-            <td>{p.age}</td>
-            <td>{p.gender}</td>
-            <td>{p.address}</td>
+    <div>
+      <Typography level="h4" mb={2}>Patient Records</Typography>
+      <Table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Name</th><th>Age</th><th>Gender</th>
           </tr>
-        ))}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {patients.map((p) => (
+            <tr key={p.id}>
+              <td>{p.id}</td>
+              <td>{p.name}</td>
+              <td>{p.age}</td>
+              <td>{p.gender}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </div>
   );
-}
+};
 
 export default PatientList;

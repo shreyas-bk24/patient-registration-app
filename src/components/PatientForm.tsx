@@ -1,89 +1,80 @@
 import React, { useState } from "react";
 import {
-    Box,
-    FormControl,
-    FormLabel,
-    Input,
-    Select,
-    Option,
-    Button,
-    Typography,
-    Stack,
+  Box, FormControl, FormLabel, Input, Select, Option, Button, Typography, Stack,
 } from "@mui/joy";
+import dbPromise from "../db/pglite";
 
-const PatientForm = () => {
-    const [formData, setFormData] = useState({
-        name: "",
-        age: "",
-        gender: "",
-    });
+interface Patient {
+  id?: number;      
+  name: string;
+  age: number;
+  gender: 'Male' | 'Female' | 'Other';
+}
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData((prev) => ({
-            ...prev,
-            [e.target.name]: e.target.value,
-        }));
-    };
+const PatientForm = ({ onPatientRegistered }: { onPatientRegistered?: () => void }) => {
+  const [formData, setFormData] = useState<Patient>({
+    name : '',
+    age : 0,
+    gender : 'Male'
+  });
 
-    const handleGenderChange = (_: any, value: string | null) => {
-        setFormData((prev) => ({
-            ...prev,
-            gender: value ?? "",
-        }));
-    };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log("Patient Registered:", formData);
-        setFormData({ name: "", age: "", gender: "" });
-    };
+  const handleGenderChange = (_: any, value: string | null) => {
+    if (value === 'Male' || value === 'Female' || value === 'Other') {
+      setFormData((prev) => ({
+        ...prev,
+        gender: value,
+      }));
+    }
+  };
 
-    return (
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-            <Stack spacing={2}>
-                <Typography level="h4">Register New Patient</Typography>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const db = await dbPromise;
+    try {
+      await db.query(
+        'INSERT INTO patients (name, age, gender) VALUES ($1, $2, $3)',
+        [formData.name, formData.age, formData.gender]
+      );
+    } catch (error) {
+      console.error(error)
+    }
+    setFormData({ name: "", age: 0, gender: 'Male' });
+    onPatientRegistered?.(); // Notify parent to refresh list
+  };
 
-                <FormControl>
-                    <FormLabel>Name</FormLabel>
-                    <Input
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                    />
-                </FormControl>
-
-                <FormControl>
-                    <FormLabel>Age</FormLabel>
-                    <Input
-                        name="age"
-                        type="number"
-                        value={formData.age}
-                        onChange={handleChange}
-                        required
-                    />
-                </FormControl>
-
-                <FormControl>
-                    <FormLabel>Gender</FormLabel>
-                    <Select
-                        placeholder="Select gender"
-                        value={formData.gender}
-                        onChange={handleGenderChange}
-                        required
-                    >
-                        <Option value="Male">Male</Option>
-                        <Option value="Female">Female</Option>
-                        <Option value="Other">Other</Option>
-                    </Select>
-                </FormControl>
-
-                <Button type="submit" color="primary">
-                    Register
-                </Button>
-            </Stack>
-        </Box>
-    );
+  return (
+    <Box>
+      <Typography level="h4" mb={2}>Register New Patient</Typography>
+      <form onSubmit={handleSubmit}>
+        <Stack spacing={2}>
+          <FormControl>
+            <FormLabel>Name</FormLabel>
+            <Input name="name" value={formData.name} onChange={handleChange} required />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Age</FormLabel>
+            <Input name="age" value={formData.age} onChange={handleChange} type="number" required />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Gender</FormLabel>
+            <Select value={formData.gender} onChange={handleGenderChange} required>
+              <Option value="Male">Male</Option>
+              <Option value="Female">Female</Option>
+              <Option value="Other">Other</Option>
+            </Select>
+          </FormControl>
+          <Button type="submit">Register</Button>
+        </Stack>
+      </form>
+    </Box>
+  );
 };
 
 export default PatientForm;
