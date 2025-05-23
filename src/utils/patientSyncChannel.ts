@@ -1,0 +1,1 @@
+export const patientSyncChannel = new BroadcastChannel('patient-sync');
