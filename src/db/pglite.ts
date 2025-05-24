@@ -1,16 +1,12 @@
-import { PGlite } from '@electric-sql/pglite';
+// Initialize the main-thread interface for a PGlite database that runs inside a Web Worker.
+// This setup allows database queries to run off the main thread, improving performance
+// and enabling cross-tab synchronization in the browser.
 
-const dbPromise = (async () => {
-  const db = new PGlite("idb://patient_db");
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS patients (
-      id SERIAL PRIMARY KEY,
-      name TEXT NOT NULL,
-      age INTEGER NOT NULL,
-      gender TEXT NOT NULL
-    );
-  `);
-  return db;
-})();
+import { PGliteWorker } from "@electric-sql/pglite/worker";
 
-export default dbPromise;
+// Create and export a new PGliteWorker instance connected to the worker script
+export const db = new PGliteWorker(
+    new Worker(new URL('./PGliteWorker.ts',import.meta.url),{ // Resolve and load the worker script
+      type: 'module', 
+    }),
+);
