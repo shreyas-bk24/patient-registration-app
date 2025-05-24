@@ -43,7 +43,7 @@ A React-based patient registration system using **PGlite** for local database st
 ---
 
 ## Project Structure
-
+```text
 src/
 ├── db/
 │ ├── pgliteWorker.ts # PGlite multi-tab worker initialization
@@ -59,7 +59,7 @@ src/
 │ └── SQLQueryBox.tsx # SQL query box component
 │
 └── App.tsx # Root app component
-
+```
 ---
 
 ## Getting Started
@@ -71,22 +71,24 @@ src/
 - Modern browser (Chrome, Firefox, Edge, Safari 15.4+)  
 
 ### Installation
-
+```bash
 git clone https://github.com/shreyas-bk24/patient-registration-app.git
 cd patient-registration-app
 npm install
+```
 or
-
+```bash
 yarn install
-text
+```
 
 ### Running the app locally
-
+```
 npm run dev
+```
 or
-
+```bash
 yarn dev
-text
+```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
@@ -103,13 +105,13 @@ To safely share the PGlite database instance across multiple tabs/windows, this 
 - Leader election happens automatically when tabs open/close.
 
 ### Example usage:
-
+```javascript
 import { db } from '../db/pglite';
 await db.exec(
 INSERT INTO patients (name, age, gender) VALUES (?, ?, ?),
 { params: [name, age, gender] }
 );
-text
+```
 
 ---
 
@@ -125,16 +127,16 @@ To keep the UI in sync across tabs/windows:
 
 import { patientSyncChannel } from '../utils/patientSyncChannel';
 patientSyncChannel.postMessage({ type: 'patient-registered' });
-text
 
 ### Example listener in patient list:
-
+```javascript
 patientSyncChannel.addEventListener('message', (event) => {
 if (event.data?.type === 'patient-registered') {
 fetchPatients();
 }
 });
-text
+```
+
 
 ---
 
