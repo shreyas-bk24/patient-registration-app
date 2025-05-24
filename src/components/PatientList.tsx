@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Table } from "@mui/joy";
-import dbPromise from "../db/pglite";
-
+import { db } from "../db/pglite";
+import { patientSyncChannel } from "../utils/patientSyncChannel";
 
 const PatientList = () => {
   const [patients, setPatients] = useState<any[]>([]);
 
   const fetchPatients = async () => {
-    const db = await dbPromise;
     const result = await db.exec(`SELECT * FROM patients`);
     setPatients(result[0]?.rows || []);
   };
 
   useEffect(() => {
     fetchPatients();
+
+    const onMessage = (event : MessageEvent) => {
+      if(event.data?.type === 'patient-registered'){
+        console.log("event received")
+        fetchPatients();
+      }
+    }
     // Listen for storage events for cross-tab sync
-    window.addEventListener("storage", fetchPatients);
-    return () => window.removeEventListener("storage", fetchPatients);
+    patientSyncChannel.addEventListener('message',onMessage)
+
+    return () => patientSyncChannel.addEventListener('message',onMessage);
   }, []);
 
   return (

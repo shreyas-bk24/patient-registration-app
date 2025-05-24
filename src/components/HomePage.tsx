@@ -7,7 +7,7 @@ import { Box, Typography } from '@mui/joy';
 import PatientRegisterForm from './PatientForm';
 import PatientList from './PatientList';
 import SQLQueryBox from './SQLQuery';
-import dbPromise from '../db/pglite';
+import { db } from '../db/pglite';
 
 const HomePage = () => {
   const [index, setIndex] = React.useState(0);
@@ -15,7 +15,7 @@ const HomePage = () => {
 
 
   const runRawSQL = async (query: string): Promise<any[]> => {
-    const db = await dbPromise;
+
       if (!db) throw new Error("Database not initialized");
       const result = await db.exec(query);
       return result[0]?.rows || [];

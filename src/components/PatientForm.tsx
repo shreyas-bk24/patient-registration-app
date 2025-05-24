@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import {
   Box, FormControl, FormLabel, Input, Select, Option, Button, Typography, Stack,
 } from "@mui/joy";
-import dbPromise from "../db/pglite";
+import { db } from "../db/pglite";
+import { patientSyncChannel } from "../utils/patientSyncChannel";
 
 interface Patient {
   id?: number;      
@@ -36,7 +37,6 @@ const PatientForm = ({ onPatientRegistered }: { onPatientRegistered?: () => void
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const db = await dbPromise;
     try {
       await db.query(
         'INSERT INTO patients (name, age, gender) VALUES ($1, $2, $3)',
@@ -45,6 +45,8 @@ const PatientForm = ({ onPatientRegistered }: { onPatientRegistered?: () => void
     } catch (error) {
       console.error(error)
     }
+    patientSyncChannel.postMessage({type: "patient-registered"})
+    console.log("Broadcast has sent")
     setFormData({ name: "", age: 0, gender: 'Male' });
     onPatientRegistered?.(); // Notify parent to refresh list
   };
