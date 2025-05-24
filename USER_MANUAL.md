@@ -119,7 +119,7 @@ Welcome to the Patient Registration System! This guide will help you navigate th
 For additional help, feature requests, or to report bugs:
 
 - Contact your system administrator or developer.  
-- Open an issue on the project’s GitHub repository: [https://github.com/yourusername/patient-registration/issues](https://github.com/yourusername/patient-registration/issues)
+- Open an issue on the project’s GitHub repository: [[https://github.com/yourusername/patient-registration/issues](https://github.com/shreyas-bk24/patient-registration-app/issues)]([https://github.com/yourusername/patient-registration/issues](https://github.com/shreyas-bk24/patient-registration-app/issues))
 
 ---
 
