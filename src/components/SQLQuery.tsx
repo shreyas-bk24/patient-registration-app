@@ -9,14 +9,18 @@ import {
 } from "@mui/joy";
 
 interface Props {
-  runRawSQL: (query: string) => Promise<any[]>;
+  runRawSQL: (query: string) => Promise<any[]>;  // Function to execute raw SQL queries and return results
 }
 
 const SQLQueryBox: React.FC<Props> = ({ runRawSQL }) => {
+  // State to hold the SQL query input by the user
   const [query, setQuery] = useState("");
+  
+  // State to hold the query results (array of row objects)
   const [results, setResults] = useState<any[]>([]);
   const [error, setError] = useState("");
 
+  // Handler to execute the query on button click
   const handleRunQuery = async () => {
     try {
       const rows = await runRawSQL(query);

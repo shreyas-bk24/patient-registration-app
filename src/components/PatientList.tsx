@@ -1,19 +1,25 @@
-import React, { useEffect, useState } from "react";
+// Patient list view component
+
+import { useEffect, useState } from "react";
 import { Typography, Table } from "@mui/joy";
 import { db } from "../db/pglite";
 import { patientSyncChannel } from "../utils/patientSyncChannel";
 
 const PatientList = () => {
+  // State to hold list of patients fetched from the database
   const [patients, setPatients] = useState<any[]>([]);
 
+  // Fetch all patients from the local database
   const fetchPatients = async () => {
     const result = await db.exec(`SELECT * FROM patients`);
     setPatients(result[0]?.rows || []);
   };
 
   useEffect(() => {
+    // Initial fetch when component mounts
     fetchPatients();
 
+    // Event handler for receiving broadcast messages to sync data across tabs
     const onMessage = (event : MessageEvent) => {
       if(event.data?.type === 'patient-registered'){
         console.log("event received")
@@ -23,6 +29,7 @@ const PatientList = () => {
     // Listen for storage events for cross-tab sync
     patientSyncChannel.addEventListener('message',onMessage)
 
+    // Cleanup listener on component unmount
     return () => patientSyncChannel.addEventListener('message',onMessage);
   }, []);
 

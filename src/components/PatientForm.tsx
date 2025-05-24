@@ -1,3 +1,5 @@
+// Patient registration form component
+
 import React, { useState } from "react";
 import {
   Box, FormControl, FormLabel, Input, Select, Option, Button, Typography, Stack,
@@ -13,12 +15,14 @@ interface Patient {
 }
 
 const PatientForm = ({ onPatientRegistered }: { onPatientRegistered?: () => void }) => {
+  // Form state for new patient data
   const [formData, setFormData] = useState<Patient>({
     name : '',
     age : 0,
     gender : 'Male'
   });
 
+  // Handle changes in text/number inputs (name, age)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
@@ -26,6 +30,7 @@ const PatientForm = ({ onPatientRegistered }: { onPatientRegistered?: () => void
     }));
   };
 
+  // Handle gender selection from dropdown
   const handleGenderChange = (_: any, value: string | null) => {
     if (value === 'Male' || value === 'Female' || value === 'Other') {
       setFormData((prev) => ({
@@ -35,6 +40,7 @@ const PatientForm = ({ onPatientRegistered }: { onPatientRegistered?: () => void
     }
   };
 
+  // Handle form submission to insert patient data into DB
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -45,10 +51,12 @@ const PatientForm = ({ onPatientRegistered }: { onPatientRegistered?: () => void
     } catch (error) {
       console.error(error)
     }
+
+    // Notify other tabs and components that a patient was registered
     patientSyncChannel.postMessage({type: "patient-registered"})
-    console.log("Broadcast has sent")
+
     setFormData({ name: "", age: 0, gender: 'Male' });
-    onPatientRegistered?.(); // Notify parent to refresh list
+    onPatientRegistered?.(); 
   };
 
   return (
